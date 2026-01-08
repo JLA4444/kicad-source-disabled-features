@@ -4216,20 +4216,6 @@ static struct FOOTPRINT_DESC
                                      &FOOTPRINT::GetComponentClassAsString ), groupFields )
                 .SetIsHiddenFromLibraryEditors();
 
-        const wxString groupAttributes = _HKI( "Attributes" );
-
-        propMgr.AddProperty( new PROPERTY<FOOTPRINT, bool>( _HKI( "Not in Schematic" ),
-                    &FOOTPRINT::SetBoardOnly, &FOOTPRINT::IsBoardOnly ), groupAttributes );
-        propMgr.AddProperty( new PROPERTY<FOOTPRINT, bool>( _HKI( "Exclude From Position Files" ),
-                    &FOOTPRINT::SetExcludedFromPosFiles, &FOOTPRINT::IsExcludedFromPosFiles ),
-                    groupAttributes );
-        propMgr.AddProperty( new PROPERTY<FOOTPRINT, bool>( _HKI( "Exclude From Bill of Materials" ),
-                    &FOOTPRINT::SetExcludedFromBOM, &FOOTPRINT::IsExcludedFromBOM ),
-                    groupAttributes );
-        propMgr.AddProperty( new PROPERTY<FOOTPRINT, bool>( _HKI( "Do not Populate" ),
-                    &FOOTPRINT::SetDNP, &FOOTPRINT::IsDNP ),
-                    groupAttributes );
-
         const wxString groupOverrides = _HKI( "Overrides" );
 
         propMgr.AddProperty( new PROPERTY<FOOTPRINT, bool>(

@@ -124,9 +124,10 @@ public:
         SetIcon( BITMAPS::locked );
         SetTitle( _( "Locking" ) );
 
-        AddItem( PCB_ACTIONS::lock, PCB_SELECTION_CONDITIONS::HasUnlockedItems );
-        AddItem( PCB_ACTIONS::unlock, PCB_SELECTION_CONDITIONS::HasLockedItems );
-        AddItem( PCB_ACTIONS::toggleLock, SELECTION_CONDITIONS::ShowAlways );
+        // RESTRICTED MODE: All lock options hidden from context menu
+        // AddItem( PCB_ACTIONS::lock, PCB_SELECTION_CONDITIONS::HasUnlockedItems );
+        // AddItem( PCB_ACTIONS::unlock, PCB_SELECTION_CONDITIONS::HasLockedItems );
+        // AddItem( PCB_ACTIONS::toggleLock, SELECTION_CONDITIONS::ShowAlways );
     }
 
     ACTION_MENU* create() const override
@@ -202,7 +203,8 @@ bool BOARD_EDITOR_CONTROL::Init()
     std::shared_ptr<ZONE_CONTEXT_MENU> zoneMenu = std::make_shared<ZONE_CONTEXT_MENU>();
     zoneMenu->SetTool( this );
 
-    std::shared_ptr<LOCK_CONTEXT_MENU> lockMenu = std::make_shared<LOCK_CONTEXT_MENU>( this );
+    // RESTRICTED MODE: Lock context menu disabled
+    // std::shared_ptr<LOCK_CONTEXT_MENU> lockMenu = std::make_shared<LOCK_CONTEXT_MENU>( this );
 
     // Add the PCB control menus to relevant other tools
 
@@ -218,9 +220,11 @@ bool BOARD_EDITOR_CONTROL::Init()
         menu.AddSeparator();
 
         toolMenu.RegisterSubMenu( zoneMenu );
-        toolMenu.RegisterSubMenu( lockMenu );
+        // RESTRICTED MODE: Lock menu registration disabled
+        // toolMenu.RegisterSubMenu( lockMenu );
 
-        menu.AddMenu( lockMenu.get(), SELECTION_CONDITIONS::NotEmpty, 100 );
+        // RESTRICTED MODE: Lock menu disabled from right-click context
+        // menu.AddMenu( lockMenu.get(), SELECTION_CONDITIONS::NotEmpty, 100 );
 
         menu.AddMenu( zoneMenu.get(), SELECTION_CONDITIONS::OnlyTypes( { PCB_ZONE_T } ), 100 );
     }
@@ -1008,6 +1012,9 @@ int BOARD_EDITOR_CONTROL::ViaSizeDec( const TOOL_EVENT& aEvent )
 
 int BOARD_EDITOR_CONTROL::PlaceFootprint( const TOOL_EVENT& aEvent )
 {
+    // RESTRICTED MODE: Place footprint disabled
+    return 0;
+
     if( m_inPlaceFootprint )
         return 0;
 
@@ -1221,7 +1228,8 @@ int BOARD_EDITOR_CONTROL::PlaceFootprint( const TOOL_EVENT& aEvent )
 
 int BOARD_EDITOR_CONTROL::ToggleLockSelected( const TOOL_EVENT& aEvent )
 {
-    return modifyLockSelected( TOGGLE );
+    // RESTRICTED MODE: Toggle lock only locks, never unlocks
+    return modifyLockSelected( ON );
 }
 
 
@@ -1233,7 +1241,8 @@ int BOARD_EDITOR_CONTROL::LockSelected( const TOOL_EVENT& aEvent )
 
 int BOARD_EDITOR_CONTROL::UnlockSelected( const TOOL_EVENT& aEvent )
 {
-    return modifyLockSelected( OFF );
+    // RESTRICTED MODE: Unlock disabled
+    return 0;
 }
 
 

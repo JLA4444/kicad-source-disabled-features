@@ -406,8 +406,9 @@ double PCB_TEXTBOX::ViewGetLOD( int aLayer, const KIGFX::VIEW* aView ) const
 
 std::vector<int> PCB_TEXTBOX::ViewGetLayers() const
 {
-    if( IsLocked() )
-        return { GetLayer(), LAYER_LOCKED_ITEM_SHADOW };
+    // RESTRICTED MODE: Don't show locked item shadow
+    // if( IsLocked() )
+    //     return { GetLayer(), LAYER_LOCKED_ITEM_SHADOW };
 
     return { GetLayer() };
 }

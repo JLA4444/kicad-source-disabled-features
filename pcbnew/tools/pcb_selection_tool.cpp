@@ -2846,6 +2846,10 @@ void PCB_SELECTION_TOOL::RebuildSelection()
 
 bool PCB_SELECTION_TOOL::Selectable( const BOARD_ITEM* aItem, bool checkVisibilityOnly ) const
 {
+    // RESTRICTED MODE: Items on Edge.Cuts layer are not selectable (view-only)
+    if( aItem->GetLayer() == Edge_Cuts )
+        return false;
+
     const RENDER_SETTINGS* settings = getView()->GetPainter()->GetSettings();
     const PCB_DISPLAY_OPTIONS& options = frame()->GetDisplayOptions();
 

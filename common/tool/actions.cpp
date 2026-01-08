@@ -856,38 +856,39 @@ TOOL_ACTION ACTIONS::panRight( TOOL_ACTION_ARGS()
         .Parameter( CURSOR_RIGHT ) );
 
 // Grid control
+// RESTRICTED MODE: All grid change hotkeys disabled
 TOOL_ACTION ACTIONS::gridFast1( TOOL_ACTION_ARGS()
         .Name( "common.Control.gridFast1" )
         .Scope( AS_GLOBAL )
-        .DefaultHotkey( MD_ALT + '1' )
+        // .DefaultHotkey( MD_ALT + '1' )
         .LegacyHotkeyName( "Switch Grid To Fast Grid1" )
         .FriendlyName( _( "Switch to Fast Grid 1" ) ) );
 
 TOOL_ACTION ACTIONS::gridFast2( TOOL_ACTION_ARGS()
         .Name( "common.Control.gridFast2" )
         .Scope( AS_GLOBAL )
-        .DefaultHotkey( MD_ALT + '2' )
+        // .DefaultHotkey( MD_ALT + '2' )
         .LegacyHotkeyName( "Switch Grid To Fast Grid2" )
         .FriendlyName( _( "Switch to Fast Grid 2" ) ) );
 
 TOOL_ACTION ACTIONS::gridFastCycle( TOOL_ACTION_ARGS()
         .Name( "common.Control.gridFastCycle" )
         .Scope( AS_GLOBAL )
-        .DefaultHotkey( MD_ALT + '4' )
+        // .DefaultHotkey( MD_ALT + '4' )
         .LegacyHotkeyName( "Switch Grid To Next Fast Grid" )
         .FriendlyName( _( "Cycle Fast Grid"  ) ) );
 
 TOOL_ACTION ACTIONS::gridNext( TOOL_ACTION_ARGS()
         .Name( "common.Control.gridNext" )
         .Scope( AS_GLOBAL )
-        .DefaultHotkey( 'N' )
+        // .DefaultHotkey( 'N' )
         .LegacyHotkeyName( "Switch Grid To Next" )
         .FriendlyName( _("Switch to Next Grid" ) ) );
 
 TOOL_ACTION ACTIONS::gridPrev( TOOL_ACTION_ARGS()
         .Name( "common.Control.gridPrev" )
         .Scope( AS_GLOBAL )
-        .DefaultHotkey( MD_SHIFT + 'N' )
+        // .DefaultHotkey( MD_SHIFT + 'N' )
         .LegacyHotkeyName( "Switch Grid To Previous" )
         .FriendlyName( _( "Switch to Previous Grid" ) ) );
 
@@ -1072,10 +1073,11 @@ TOOL_ACTION ACTIONS::showProjectManager( TOOL_ACTION_ARGS()
         .Tooltip( _( "Show project window" ) )
         .Icon( BITMAPS::icon_kicad_24 ) );
 
+// RESTRICTED MODE: 3D Viewer hotkey disabled
 TOOL_ACTION ACTIONS::show3DViewer( TOOL_ACTION_ARGS()
         .Name( "common.Control.show3DViewer" )
         .Scope( AS_GLOBAL )
-        .DefaultHotkey( MD_ALT + '3' )
+        // .DefaultHotkey( MD_ALT + '3' )
         .LegacyHotkeyName( "3D Viewer" )
         .FriendlyName( _( "3D Viewer" ) )
         .Tooltip( _( "Show 3D viewer window" ) )

@@ -206,6 +206,8 @@ bool DIALOG_NON_COPPER_ZONES_EDITOR::TransferDataToWindow()
 
     m_minWidth.SetValue( m_settings.m_ZoneMinThickness );
     m_cbLocked->SetValue( m_settings.m_Locked );
+    // RESTRICTED MODE: Hide lock checkbox
+    m_cbLocked->Hide();
 
     switch( m_settings.m_ZoneBorderDisplayStyle )
     {

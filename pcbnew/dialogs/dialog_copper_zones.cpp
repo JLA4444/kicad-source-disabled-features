@@ -300,6 +300,8 @@ bool DIALOG_COPPER_ZONE::TransferDataToWindow()
     }
 
     m_cbLocked->SetValue( m_settings.m_Locked );
+    // RESTRICTED MODE: Hide lock checkbox
+    m_cbLocked->Hide();
     m_cornerSmoothingChoice->SetSelection( m_settings.GetCornerSmoothingType() );
     m_cornerRadius.SetValue( m_settings.GetCornerRadius() );
     m_PriorityLevelCtrl->SetValue( m_settings.m_ZonePriority );

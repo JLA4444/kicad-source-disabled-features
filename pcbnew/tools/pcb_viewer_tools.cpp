@@ -75,26 +75,7 @@ void PCB_VIEWER_TOOLS::Reset( RESET_REASON aReason )
 
 int PCB_VIEWER_TOOLS::Show3DViewer( const TOOL_EVENT& aEvent )
 {
-    bool do_reload_board = true;    // reload board flag
-
-    // At EDA_3D_VIEWER_FRAME creation, the current board is loaded, so disable loading
-    // the current board if the 3D frame is not yet created
-    if( frame()->Get3DViewerFrame() == nullptr )
-        do_reload_board = false;
-
-    EDA_3D_VIEWER_FRAME* draw3DFrame = frame()->CreateAndShow3D_Frame();
-
-    if( frame()->IsType( FRAME_FOOTPRINT_VIEWER )
-     || frame()->IsType( FRAME_FOOTPRINT_WIZARD ) )
-    {
-        // A stronger version of Raise() which promotes the window to its parent's level.
-        KIPLATFORM::UI::ReparentModal( draw3DFrame );
-    }
-
-    // And load or update the current board (if needed)
-    if( do_reload_board )
-        frame()->Update3DView( true, true );
-
+    // RESTRICTED MODE: 3D Viewer disabled
     return 0;
 }
 

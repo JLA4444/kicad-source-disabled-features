@@ -174,10 +174,11 @@ static const TOOL_ACTION ACT_SelLayerAndPlaceMicroVia( TOOL_ACTION_ARGS()
         .Flags( AF_NONE )
         .Parameter<int>( VIA_ACTION_FLAGS::MICROVIA | VIA_ACTION_FLAGS::SELECT_LAYER ) );
 
+// RESTRICTED MODE: Custom track/via size hotkey disabled
 static const TOOL_ACTION ACT_CustomTrackWidth( TOOL_ACTION_ARGS()
         .Name( "pcbnew.InteractiveRouter.CustomTrackViaSize" )
         .Scope( AS_CONTEXT )
-        .DefaultHotkey( 'Q' )
+        // .DefaultHotkey( 'Q' )
         .LegacyHotkeyName( "Custom Track/Via Size" )
         .FriendlyName( _( "Custom Track/Via Size..." ) )
         .Tooltip( _( "Shows a dialog for changing the track width and via size." ) )
@@ -249,9 +250,10 @@ protected:
         Check( ID_POPUP_PCB_SELECT_USE_NETCLASS_VALUES,
                useIndex && bds.GetTrackWidthIndex() == 0 && bds.GetViaSizeIndex() == 0 );
 
-        Append( ID_POPUP_PCB_SELECT_CUSTOM_WIDTH, _( "Use Custom Values..." ),
-                _( "Specify custom track and via sizes" ), wxITEM_CHECK );
-        Check( ID_POPUP_PCB_SELECT_CUSTOM_WIDTH, bds.UseCustomTrackViaSize() );
+        // RESTRICTED MODE: Custom track/via size option removed
+        // Append( ID_POPUP_PCB_SELECT_CUSTOM_WIDTH, _( "Use Custom Values..." ),
+        //         _( "Specify custom track and via sizes" ), wxITEM_CHECK );
+        // Check( ID_POPUP_PCB_SELECT_CUSTOM_WIDTH, bds.UseCustomTrackViaSize() );
 
         AppendSeparator();
 
@@ -270,33 +272,10 @@ protected:
             Check( menuIdx, useIndex && bds.GetTrackWidthIndex() == i );
         }
 
-        AppendSeparator();
-
-        for( unsigned i = 0; i < bds.m_ViasDimensionsList.size(); i++ )
-        {
-            VIA_DIMENSION via = bds.m_ViasDimensionsList[i];
-
-            if( i == 0 )
-                msg = _( "Via netclass values" );
-            else
-            {
-                if( via.m_Drill > 0 )
-                {
-                    msg.Printf( _("Via %s, hole %s" ),
-                                m_frame.MessageTextFromValue( via.m_Diameter ),
-                                m_frame.MessageTextFromValue( via.m_Drill ) );
-                }
-                else
-                {
-                    msg.Printf( _( "Via %s" ),
-                                m_frame.MessageTextFromValue( via.m_Diameter ) );
-                }
-            }
-
-            int menuIdx = ID_POPUP_PCB_SELECT_VIASIZE1 + i;
-            Append( menuIdx, msg, wxEmptyString, wxITEM_CHECK );
-            Check( menuIdx, useIndex && bds.GetViaSizeIndex() == i );
-        }
+        // RESTRICTED MODE: Via size selection removed from context menu
+        // AppendSeparator();
+        // for( unsigned i = 0; i < bds.m_ViasDimensionsList.size(); i++ )
+        // { ... }
     }
 
     OPT_TOOL_EVENT eventHandler( const wxMenuEvent& aEvent ) override
@@ -307,11 +286,10 @@ protected:
         // On Windows, this handler can be called with an event ID not existing in any
         // menuitem, so only set flags when we have an ID match.
 
+        // RESTRICTED MODE: Custom width handler disabled
         if( id == ID_POPUP_PCB_SELECT_CUSTOM_WIDTH )
         {
-            bds.UseCustomTrackViaSize( true );
-            bds.m_TempOverrideTrackWidth = true;
-            m_frame.GetToolManager()->RunAction( ACT_CustomTrackWidth );
+            // Do nothing - custom sizes not allowed
         }
         else if( id == ID_POPUP_PCB_SELECT_AUTO_WIDTH )
         {
@@ -2658,18 +2636,7 @@ int ROUTER_TOOL::InlineBreakTrack( const TOOL_EVENT& aEvent )
 
 int ROUTER_TOOL::CustomTrackWidthDialog( const TOOL_EVENT& aEvent )
 {
-    BOARD_DESIGN_SETTINGS& bds = board()->GetDesignSettings();
-    DIALOG_TRACK_VIA_SIZE sizeDlg( frame(), bds );
-
-    if( sizeDlg.ShowModal() == wxID_OK )
-    {
-        bds.m_TempOverrideTrackWidth = true;
-        bds.UseCustomTrackViaSize( true );
-
-        TOOL_EVENT dummy;
-        onTrackViaSizeChanged( dummy );
-    }
-
+    // RESTRICTED MODE: Custom track/via size dialog disabled
     return 0;
 }
 

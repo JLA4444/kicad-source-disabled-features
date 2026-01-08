@@ -489,43 +489,29 @@ int COMMON_TOOLS::doZoomToPreset( int idx, bool aCenterOnCursor )
 
 int COMMON_TOOLS::GridNext( const TOOL_EVENT& aEvent )
 {
-    int& currentGrid = m_frame->GetWindowSettings( m_toolMgr->GetSettings() )->grid.last_size_idx;
-
-    currentGrid++;
-
-    if( currentGrid >= int( m_grids.size() ) )
-        currentGrid = 0;
-
-    return OnGridChanged( true );
+    // RESTRICTED MODE: Grid change disabled - locked to current setting
+    return 0;
 }
 
 
 int COMMON_TOOLS::GridPrev( const TOOL_EVENT& aEvent )
 {
-    int& currentGrid = m_frame->GetWindowSettings( m_toolMgr->GetSettings() )->grid.last_size_idx;
-
-    currentGrid--;
-
-    if( currentGrid < 0 )
-        currentGrid = (int) m_grids.size() - 1;
-
-    return OnGridChanged( true );
+    // RESTRICTED MODE: Grid change disabled - locked to current setting
+    return 0;
 }
 
 
 int COMMON_TOOLS::GridPreset( const TOOL_EVENT& aEvent )
 {
-    return GridPreset( aEvent.Parameter<int>(), false );
+    // RESTRICTED MODE: Grid change disabled - locked to current setting
+    return 0;
 }
 
 
 int COMMON_TOOLS::GridPreset( int idx, bool aFromHotkey )
 {
-    int& currentGrid = m_frame->GetWindowSettings( m_toolMgr->GetSettings() )->grid.last_size_idx;
-
-    currentGrid = std::clamp( idx, 0, (int) m_grids.size() - 1 );
-
-    return OnGridChanged( aFromHotkey );
+    // RESTRICTED MODE: Grid change disabled - locked to current setting
+    return 0;
 }
 
 
@@ -558,25 +544,22 @@ int COMMON_TOOLS::OnGridChanged( bool aFromHotkey )
 
 int COMMON_TOOLS::GridFast1( const TOOL_EVENT& aEvent )
 {
-    return GridPreset( m_frame->GetWindowSettings( m_toolMgr->GetSettings() )->grid.fast_grid_1, true );
+    // RESTRICTED MODE: Grid change disabled
+    return 0;
 }
 
 
 int COMMON_TOOLS::GridFast2( const TOOL_EVENT& aEvent )
 {
-    return GridPreset( m_frame->GetWindowSettings( m_toolMgr->GetSettings() )->grid.fast_grid_2, true );
+    // RESTRICTED MODE: Grid change disabled
+    return 0;
 }
 
 
 int COMMON_TOOLS::GridFastCycle( const TOOL_EVENT& aEvent )
 {
-    if( m_frame->GetWindowSettings( m_toolMgr->GetSettings() )->grid.last_size_idx
-        == m_frame->GetWindowSettings( m_toolMgr->GetSettings() )->grid.fast_grid_1 )
-    {
-        return GridPreset( m_frame->GetWindowSettings( m_toolMgr->GetSettings() )->grid.fast_grid_2, true );
-    }
-
-    return GridPreset( m_frame->GetWindowSettings( m_toolMgr->GetSettings() )->grid.fast_grid_1, true );
+    // RESTRICTED MODE: Grid change disabled
+    return 0;
 }
 
 

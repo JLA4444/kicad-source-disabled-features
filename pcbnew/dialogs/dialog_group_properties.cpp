@@ -46,7 +46,8 @@ DIALOG_GROUP_PROPERTIES::DIALOG_GROUP_PROPERTIES( PCB_BASE_EDIT_FRAME* aParent,
     m_nameCtrl->SetValue( m_group->GetName() );
 
     m_locked->SetValue( m_group->IsLocked() );
-    m_locked->Show( dynamic_cast<PCB_EDIT_FRAME*>( aParent ) != nullptr );
+    // RESTRICTED MODE: Hide lock checkbox
+    m_locked->Hide();
 
     for( BOARD_ITEM* item : m_group->GetItems() )
         m_membersList->Append( item->GetItemDescription( m_brdEditor, true ), item );

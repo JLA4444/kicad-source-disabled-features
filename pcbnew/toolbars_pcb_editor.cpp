@@ -140,22 +140,11 @@ void PCB_EDIT_FRAME::ReCreateHToolbar()
         m_mainToolBar->SetAuiManager( &m_auimgr );
     }
 
-    // Set up toolbar
-    if( Kiface().IsSingle() )
-    {
-        m_mainToolBar->Add( ACTIONS::doNew );
-        m_mainToolBar->Add( ACTIONS::open );
-    }
+    // RESTRICTED MODE: Only essential toolbar buttons
+    // Removed: New, Open, boardSetup, pageSettings, print, plot, lock, unlock,
+    //          footprintEditor, footprintBrowser, 3DViewer, importNetlist, eeschema, pythonConsole
 
     m_mainToolBar->Add( ACTIONS::save );
-
-    m_mainToolBar->AddScaledSeparator( this );
-    m_mainToolBar->Add( PCB_ACTIONS::boardSetup );
-
-    m_mainToolBar->AddScaledSeparator( this );
-    m_mainToolBar->Add( ACTIONS::pageSettings );
-    m_mainToolBar->Add( ACTIONS::print );
-    m_mainToolBar->Add( ACTIONS::plot );
 
     m_mainToolBar->AddScaledSeparator( this );
     m_mainToolBar->Add( ACTIONS::undo );
@@ -179,48 +168,10 @@ void PCB_EDIT_FRAME::ReCreateHToolbar()
     m_mainToolBar->Add( PCB_ACTIONS::mirrorH );
     m_mainToolBar->Add( PCB_ACTIONS::group );
     m_mainToolBar->Add( PCB_ACTIONS::ungroup );
-    m_mainToolBar->Add( PCB_ACTIONS::lock );
-    m_mainToolBar->Add( PCB_ACTIONS::unlock );
+    // RESTRICTED MODE: lock/unlock removed
 
     m_mainToolBar->AddScaledSeparator( this );
-    m_mainToolBar->Add( ACTIONS::showFootprintEditor );
-    m_mainToolBar->Add( ACTIONS::showFootprintBrowser );
-    m_mainToolBar->Add( ACTIONS::show3DViewer );
-
-    m_mainToolBar->AddScaledSeparator( this );
-
-    if( !Kiface().IsSingle() )
-        m_mainToolBar->Add( ACTIONS::updatePcbFromSchematic );
-    else
-        m_mainToolBar->Add( PCB_ACTIONS::importNetlist );
-
     m_mainToolBar->Add( PCB_ACTIONS::runDRC );
-
-    m_mainToolBar->AddScaledSeparator( this );
-    m_mainToolBar->Add( PCB_ACTIONS::showEeschema );
-
-    // Add SWIG and API plugins
-    bool scriptingAvailable = SCRIPTING::IsWxAvailable();
-#ifdef KICAD_IPC_API
-    bool haveApiPlugins = Pgm().GetCommonSettings()->m_Api.enable_server &&
-            !Pgm().GetPluginManager().GetActionsForScope( PLUGIN_ACTION_SCOPE::PCB ).empty();
-#else
-    bool haveApiPlugins = false;
-#endif
-
-    if( scriptingAvailable || haveApiPlugins )
-    {
-        m_mainToolBar->AddScaledSeparator( this );
-
-        if( scriptingAvailable )
-        {
-            m_mainToolBar->Add( PCB_ACTIONS::showPythonConsole, ACTION_TOOLBAR::TOGGLE );
-            AddActionPluginTools();
-        }
-
-        if( haveApiPlugins )
-            addApiPluginTools();
-    }
 
     // after adding the buttons to the toolbar, must call Realize() to reflect the changes
     m_mainToolBar->KiRealize();
@@ -250,10 +201,10 @@ void PCB_EDIT_FRAME::ReCreateOptToolbar()
         m_optionsToolBar->SetAuiManager( &m_auimgr );
     }
 
-    m_optionsToolBar->Add( ACTIONS::toggleGrid,               ACTION_TOOLBAR::TOGGLE );
-    m_optionsToolBar->Add( ACTIONS::toggleGridOverrides,      ACTION_TOOLBAR::TOGGLE );
-
-    m_optionsToolBar->Add( PCB_ACTIONS::togglePolarCoords,    ACTION_TOOLBAR::TOGGLE );
+    // RESTRICTED MODE: Grid is fixed, polar coords removed
+    // m_optionsToolBar->Add( ACTIONS::toggleGrid,               ACTION_TOOLBAR::TOGGLE );
+    // m_optionsToolBar->Add( ACTIONS::toggleGridOverrides,      ACTION_TOOLBAR::TOGGLE );
+    // m_optionsToolBar->Add( PCB_ACTIONS::togglePolarCoords,    ACTION_TOOLBAR::TOGGLE );
     m_optionsToolBar->Add( ACTIONS::inchesUnits,              ACTION_TOOLBAR::TOGGLE );
     m_optionsToolBar->Add( ACTIONS::milsUnits,                ACTION_TOOLBAR::TOGGLE );
     m_optionsToolBar->Add( ACTIONS::millimetersUnits,         ACTION_TOOLBAR::TOGGLE );
@@ -293,11 +244,12 @@ void PCB_EDIT_FRAME::ReCreateOptToolbar()
     m_optionsToolBar->Add( PCB_ACTIONS::showLayersManager,    ACTION_TOOLBAR::TOGGLE );
     m_optionsToolBar->Add( PCB_ACTIONS::showProperties, ACTION_TOOLBAR::TOGGLE );
 
-    PCB_SELECTION_TOOL*          selTool = m_toolManager->GetTool<PCB_SELECTION_TOOL>();
-    std::unique_ptr<ACTION_MENU> gridMenu = std::make_unique<ACTION_MENU>( false, selTool );
-    gridMenu->Add( ACTIONS::gridProperties );
-    gridMenu->Add( ACTIONS::gridOrigin );
-    m_optionsToolBar->AddToolContextMenu( ACTIONS::toggleGrid, std::move( gridMenu ) );
+    // RESTRICTED MODE: Grid context menu removed
+    // PCB_SELECTION_TOOL*          selTool = m_toolManager->GetTool<PCB_SELECTION_TOOL>();
+    // std::unique_ptr<ACTION_MENU> gridMenu = std::make_unique<ACTION_MENU>( false, selTool );
+    // gridMenu->Add( ACTIONS::gridProperties );
+    // gridMenu->Add( ACTIONS::gridOrigin );
+    // m_optionsToolBar->AddToolContextMenu( ACTIONS::toggleGrid, std::move( gridMenu ) );
 
     m_optionsToolBar->KiRealize();
 }
@@ -378,12 +330,13 @@ void PCB_EDIT_FRAME::ReCreateVToolbar()
     if( currentTuneGroupAction )
         tuneGroup->SetDefaultAction( *currentTuneGroupAction );
 
+    // RESTRICTED MODE: Removed placeFootprint, placeReferenceImage, placeText, drawTextBox, drawTable, originGroup
     // clang-format off
     m_drawToolBar->Add( ACTIONS::selectionTool,            ACTION_TOOLBAR::TOGGLE );
     m_drawToolBar->Add( PCB_ACTIONS::localRatsnestTool,    ACTION_TOOLBAR::TOGGLE );
 
     m_drawToolBar->AddScaledSeparator( this );
-    m_drawToolBar->Add( PCB_ACTIONS::placeFootprint,       ACTION_TOOLBAR::TOGGLE );
+    // m_drawToolBar->Add( PCB_ACTIONS::placeFootprint,       ACTION_TOOLBAR::TOGGLE );  // RESTRICTED
     m_drawToolBar->AddGroup( routingGroup,                 ACTION_TOOLBAR::TOGGLE );
     m_drawToolBar->AddGroup( tuneGroup,                    ACTION_TOOLBAR::TOGGLE );
     m_drawToolBar->Add( PCB_ACTIONS::drawVia,              ACTION_TOOLBAR::TOGGLE );
@@ -397,15 +350,15 @@ void PCB_EDIT_FRAME::ReCreateVToolbar()
     m_drawToolBar->Add( PCB_ACTIONS::drawCircle,           ACTION_TOOLBAR::TOGGLE );
     m_drawToolBar->Add( PCB_ACTIONS::drawPolygon,          ACTION_TOOLBAR::TOGGLE );
     m_drawToolBar->Add( PCB_ACTIONS::drawBezier,           ACTION_TOOLBAR::TOGGLE );
-    m_drawToolBar->Add( PCB_ACTIONS::placeReferenceImage,  ACTION_TOOLBAR::TOGGLE );
-    m_drawToolBar->Add( PCB_ACTIONS::placeText,            ACTION_TOOLBAR::TOGGLE );
-    m_drawToolBar->Add( PCB_ACTIONS::drawTextBox,          ACTION_TOOLBAR::TOGGLE );
-    m_drawToolBar->Add( PCB_ACTIONS::drawTable,            ACTION_TOOLBAR::TOGGLE );
+    // m_drawToolBar->Add( PCB_ACTIONS::placeReferenceImage,  ACTION_TOOLBAR::TOGGLE );  // RESTRICTED
+    // m_drawToolBar->Add( PCB_ACTIONS::placeText,            ACTION_TOOLBAR::TOGGLE );  // RESTRICTED
+    // m_drawToolBar->Add( PCB_ACTIONS::drawTextBox,          ACTION_TOOLBAR::TOGGLE );  // RESTRICTED
+    // m_drawToolBar->Add( PCB_ACTIONS::drawTable,            ACTION_TOOLBAR::TOGGLE );  // RESTRICTED
     m_drawToolBar->AddGroup( dimensionGroup,               ACTION_TOOLBAR::TOGGLE );
     m_drawToolBar->Add( ACTIONS::deleteTool,               ACTION_TOOLBAR::TOGGLE );
 
     m_drawToolBar->AddScaledSeparator( this );
-    m_drawToolBar->AddGroup( originGroup,                  ACTION_TOOLBAR::TOGGLE );
+    // m_drawToolBar->AddGroup( originGroup,                  ACTION_TOOLBAR::TOGGLE );  // RESTRICTED
     m_drawToolBar->Add( ACTIONS::measureTool,              ACTION_TOOLBAR::TOGGLE );
     // clang-format on
 
@@ -431,8 +384,9 @@ void PCB_EDIT_FRAME::ReCreateVToolbar()
         routeMenu->Add( PCB_ACTIONS::routerShoveMode, ACTION_MENU::CHECK );
         routeMenu->Add( PCB_ACTIONS::routerWalkaroundMode, ACTION_MENU::CHECK );
 
-        routeMenu->AppendSeparator();
-        routeMenu->Add( PCB_ACTIONS::routerSettingsDialog );
+        // RESTRICTED MODE: Router settings dialog removed
+        // routeMenu->AppendSeparator();
+        // routeMenu->Add( PCB_ACTIONS::routerSettingsDialog );
 
         return routeMenu;
     };
@@ -513,16 +467,13 @@ void PCB_EDIT_FRAME::ReCreateAuxiliaryToolbar()
     m_auxiliaryToolBar->Add( PCB_ACTIONS::selectLayerPair );
     PrepareLayerIndicator( true );    // Force rebuild of the bitmap with the active layer colors
 
-    // Add the box to display and select the current grid size:
-    m_auxiliaryToolBar->AddScaledSeparator( this );
-
-    if( m_gridSelectBox == nullptr )
-        m_gridSelectBox = new wxChoice( m_auxiliaryToolBar, ID_ON_GRID_SELECT,
-                                        wxDefaultPosition, wxDefaultSize, 0, nullptr );
-
-    UpdateGridSelectBox();
-
-    m_auxiliaryToolBar->AddControl( m_gridSelectBox );
+    // RESTRICTED MODE: Grid selector removed - grid is fixed
+    // m_auxiliaryToolBar->AddScaledSeparator( this );
+    // if( m_gridSelectBox == nullptr )
+    //     m_gridSelectBox = new wxChoice( m_auxiliaryToolBar, ID_ON_GRID_SELECT,
+    //                                     wxDefaultPosition, wxDefaultSize, 0, nullptr );
+    // UpdateGridSelectBox();
+    // m_auxiliaryToolBar->AddControl( m_gridSelectBox );
 
     //  Add the box to display and select the current Zoom
     m_auxiliaryToolBar->AddScaledSeparator( this );
@@ -539,7 +490,8 @@ void PCB_EDIT_FRAME::ReCreateAuxiliaryToolbar()
     m_auxiliaryToolBar->UpdateControlWidth( ID_AUX_TOOLBAR_PCB_TRACK_WIDTH );
     m_auxiliaryToolBar->UpdateControlWidth( ID_AUX_TOOLBAR_PCB_VIA_SIZE );
     m_auxiliaryToolBar->UpdateControlWidth( ID_ON_ZOOM_SELECT );
-    m_auxiliaryToolBar->UpdateControlWidth( ID_ON_GRID_SELECT );
+    // RESTRICTED MODE: Grid selector removed
+    // m_auxiliaryToolBar->UpdateControlWidth( ID_ON_GRID_SELECT );
     m_auxiliaryToolBar->UpdateControlWidth( ID_TOOLBARH_PCB_SELECT_LAYER );
 
     // after adding the buttons to the toolbar, must call Realize()
@@ -560,7 +512,8 @@ void PCB_EDIT_FRAME::UpdateToolbarControlSizes()
         m_auxiliaryToolBar->UpdateControlWidth( ID_AUX_TOOLBAR_PCB_TRACK_WIDTH );
         m_auxiliaryToolBar->UpdateControlWidth( ID_AUX_TOOLBAR_PCB_VIA_SIZE );
         m_auxiliaryToolBar->UpdateControlWidth( ID_ON_ZOOM_SELECT );
-        m_auxiliaryToolBar->UpdateControlWidth( ID_ON_GRID_SELECT );
+        // RESTRICTED MODE: Grid selector removed
+        // m_auxiliaryToolBar->UpdateControlWidth( ID_ON_GRID_SELECT );
         m_auxiliaryToolBar->UpdateControlWidth( ID_TOOLBARH_PCB_SELECT_LAYER );
     }
 }

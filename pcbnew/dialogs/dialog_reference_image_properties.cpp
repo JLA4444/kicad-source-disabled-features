@@ -88,6 +88,8 @@ bool DIALOG_REFERENCE_IMAGE_PROPERTIES::TransferDataToWindow()
     m_cbLocked->SetToolTip( _( "Locked items cannot be freely moved and oriented on the canvas "
                                "and can only be selected when the 'Locked items' checkbox is "
                                "checked in the selection filter." ) );
+    // RESTRICTED MODE: Hide lock checkbox
+    m_cbLocked->Hide();
 
     return true;
 }

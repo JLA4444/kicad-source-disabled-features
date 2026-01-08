@@ -1320,6 +1320,9 @@ void PCB_EDIT_FRAME::ActivateGalCanvas()
 
 void PCB_EDIT_FRAME::ShowBoardSetupDialog( const wxString& aInitialPage )
 {
+    // Board Setup dialog disabled
+    return;
+
     static std::mutex dialogMutex; // Local static mutex
 
     std::unique_lock<std::mutex> dialogLock( dialogMutex, std::try_to_lock );
@@ -1509,6 +1512,10 @@ void PCB_EDIT_FRAME::SetGridColor( const COLOR4D& aColor )
 
 void PCB_EDIT_FRAME::SetActiveLayer( PCB_LAYER_ID aLayer, bool aForceRedraw )
 {
+    // RESTRICTED MODE: Prevent switching to Edge_Cuts layer
+    if( aLayer == Edge_Cuts )
+        return;
+
     const PCB_LAYER_ID oldLayer = GetActiveLayer();
 
     if( oldLayer == aLayer && !aForceRedraw )
@@ -2167,6 +2174,9 @@ void PCB_EDIT_FRAME::PythonSyncProjectName()
 
 void PCB_EDIT_FRAME::ShowFootprintPropertiesDialog( FOOTPRINT* aFootprint )
 {
+    // RESTRICTED MODE: Footprint properties dialog disabled
+    return;
+
     if( aFootprint == nullptr )
         return;
 

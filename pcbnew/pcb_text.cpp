@@ -209,8 +209,9 @@ const BOX2I PCB_TEXT::ViewBBox() const
 
 std::vector<int> PCB_TEXT::ViewGetLayers() const
 {
-    if( IsLocked() )
-        return { GetLayer(), LAYER_LOCKED_ITEM_SHADOW };
+    // RESTRICTED MODE: Don't show locked item shadow
+    // if( IsLocked() )
+    //     return { GetLayer(), LAYER_LOCKED_ITEM_SHADOW };
 
     return { GetLayer() };
 }

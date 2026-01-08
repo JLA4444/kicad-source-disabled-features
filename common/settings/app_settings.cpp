@@ -391,7 +391,8 @@ void APP_SETTINGS_BASE::addParamsForWindow( WINDOW_SETTINGS* aWindow, const std:
     }
     else
     {
-        defaultGridIdx = 15;
+        // RESTRICTED MODE: Default grid is 0.1mm (index 18)
+        defaultGridIdx = 18;
     }
 
     m_params.emplace_back( new PARAM_LIST<GRID>( aJsonPath + ".grid.sizes", &aWindow->grid.grids,

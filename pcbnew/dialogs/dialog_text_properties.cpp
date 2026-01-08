@@ -128,9 +128,6 @@ DIALOG_TEXT_PROPERTIES::DIALOG_TEXT_PROPERTIES( PCB_BASE_EDIT_FRAME* aParent, PC
         SetInitialFocus( m_SingleLineText );
         m_MultiLineSizer->Show( false );
 
-        // Do not allow locking items in the footprint editor
-        m_cbLocked->Show( false );
-
         m_tabOrder = {
             m_SingleLineText,
             m_LayerSelectionCtrl,
@@ -160,7 +157,6 @@ DIALOG_TEXT_PROPERTIES::DIALOG_TEXT_PROPERTIES( PCB_BASE_EDIT_FRAME* aParent, PC
 
         m_tabOrder = {
             m_MultiLineText,
-            m_cbLocked,
             m_LayerSelectionCtrl,
             m_SizeXCtrl,
             m_SizeYCtrl,
@@ -173,6 +169,9 @@ DIALOG_TEXT_PROPERTIES::DIALOG_TEXT_PROPERTIES( PCB_BASE_EDIT_FRAME* aParent, PC
             m_sdbSizerCancel
         };
     }
+
+    // RESTRICTED MODE: Hide lock checkbox
+    m_cbLocked->Hide();
 
     m_bold->SetIsCheckButton();
     m_bold->SetBitmap( KiBitmapBundle( BITMAPS::text_bold ) );

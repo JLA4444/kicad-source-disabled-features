@@ -270,6 +270,14 @@ option( KICAD_IDF_TOOLS
     "Build additional idf tools"
     ON )
 
+option( KICAD_BUILD_PCBNEW_ONLY
+    "Build only PCBnew and its dependencies (skip eeschema, gerbview, etc.)"
+    OFF )
+
+option( KICAD_BUILD_CLI
+    "Build kicad-cli command line tool (can be used with KICAD_BUILD_PCBNEW_ONLY)"
+    OFF )
+
 # Global setting: exports are explicit
 set( CMAKE_CXX_VISIBILITY_PRESET "hidden" )
 set( CMAKE_VISIBILITY_INLINES_HIDDEN ON )
@@ -1179,16 +1187,32 @@ add_subdirectory( libs )
 add_subdirectory( scripting )
 add_subdirectory( common )
 add_subdirectory( 3d-viewer )
-add_subdirectory( eeschema )
-add_subdirectory( gerbview )
+
+if( NOT KICAD_BUILD_PCBNEW_ONLY )
+    add_subdirectory( eeschema )
+    add_subdirectory( gerbview )
+endif()
+
 add_subdirectory( pcbnew )
-add_subdirectory( pagelayout_editor )
-add_subdirectory( bitmap2component )
-add_subdirectory( pcb_calculator )
+
+if( NOT KICAD_BUILD_PCBNEW_ONLY )
+    add_subdirectory( pagelayout_editor )
+    add_subdirectory( bitmap2component )
+    add_subdirectory( pcb_calculator )
+endif()
+
 add_subdirectory( plugins )             # 3D plugins must be built before kicad
 add_subdirectory( cvpcb )               # must be after pcbnew
-add_subdirectory( kicad )               # should follow pcbnew, eeschema, api
-add_subdirectory( tools )
+
+if( NOT KICAD_BUILD_PCBNEW_ONLY OR KICAD_BUILD_CLI )
+    add_subdirectory( kicad )               # should follow pcbnew, eeschema, api
+endif()
+
+if( NOT KICAD_BUILD_PCBNEW_ONLY )
+    add_subdirectory( tools )
+endif()
+
+# utils/idftools builds idf3 library needed by 3D IDF plugin
 add_subdirectory( utils )
 
 if( KICAD_BUILD_QA_TESTS )

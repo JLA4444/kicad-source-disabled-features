@@ -205,9 +205,9 @@ wxString BOARD_ITEM::layerMaskDescribe() const
 
 std::vector<int> BOARD_ITEM::ViewGetLayers() const
 {
-    // Basic fallback
-    if( IsLocked() )
-        return { m_layer, LAYER_LOCKED_ITEM_SHADOW };
+    // RESTRICTED MODE: Don't show locked item shadow
+    // if( IsLocked() )
+    //     return { m_layer, LAYER_LOCKED_ITEM_SHADOW };
 
     return { m_layer };
 }
@@ -419,12 +419,8 @@ static struct BOARD_ITEM_DESC
                     &BOARD_ITEM::SetLayer, &BOARD_ITEM::GetLayer ) );
         propMgr.AddProperty( new PROPERTY<BOARD_ITEM, bool>( _HKI( "Locked" ),
                     &BOARD_ITEM::SetLocked, &BOARD_ITEM::IsLocked ) )
-               .SetAvailableFunc(
-                    [=]( INSPECTABLE* aItem ) -> bool
-                    {
-                        BOARD_ITEM* item = dynamic_cast<BOARD_ITEM*>( aItem );
-                        return item && item->GetBoard() && !item->GetBoard()->IsFootprintHolder();
-                    } );
+               // RESTRICTED MODE: Lock property hidden from properties panel
+               .SetIsHiddenFromPropertiesManager();
     }
 } _BOARD_ITEM_DESC;
 

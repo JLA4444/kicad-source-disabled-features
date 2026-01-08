@@ -118,7 +118,8 @@ public:
     COLOR4D GetFillColor() const               { return m_fillColor; }
     void SetFillColor( const COLOR4D& aColor ) { m_fillColor = aColor; }
 
-    void SetWidth( int aWidth )                { m_stroke.SetWidth( aWidth ); }
+    // RESTRICTED MODE: Round line width to nearest 0.1mm (100000 IU)
+    void SetWidth( int aWidth )                { m_stroke.SetWidth( ((aWidth + 50000) / 100000) * 100000 ); }
     virtual int GetWidth() const               { return m_stroke.GetWidth(); }
     virtual int GetEffectiveWidth() const      { return GetWidth(); }
 

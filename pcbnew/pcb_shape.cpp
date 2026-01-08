@@ -597,8 +597,9 @@ std::vector<int> PCB_SHAPE::ViewGetLayers() const
         }
     }
 
-    if( IsLocked() )
-        layers.push_back( LAYER_LOCKED_ITEM_SHADOW );
+    // RESTRICTED MODE: Don't show locked item shadow
+    // if( IsLocked() )
+    //     layers.push_back( LAYER_LOCKED_ITEM_SHADOW );
 
     return layers;
 }

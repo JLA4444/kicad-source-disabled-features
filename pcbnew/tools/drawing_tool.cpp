@@ -111,11 +111,12 @@ protected:
 
         Clear();
 
-        Append( ID_POPUP_PCB_SELECT_CUSTOM_WIDTH, _( "Use Custom Values..." ),
-                _( "Specify custom track and via sizes" ), wxITEM_CHECK );
-        Check( ID_POPUP_PCB_SELECT_CUSTOM_WIDTH, bds.UseCustomTrackViaSize() );
+        // RESTRICTED MODE: Custom track/via size option removed
+        // Append( ID_POPUP_PCB_SELECT_CUSTOM_WIDTH, _( "Use Custom Values..." ),
+        //         _( "Specify custom track and via sizes" ), wxITEM_CHECK );
+        // Check( ID_POPUP_PCB_SELECT_CUSTOM_WIDTH, bds.UseCustomTrackViaSize() );
 
-        AppendSeparator();
+        // AppendSeparator();
 
         for( unsigned i = 1; i < bds.m_ViasDimensionsList.size(); i++ )
         {
@@ -148,15 +149,10 @@ protected:
         // On Windows, this handler can be called with an event ID not existing in any
         // menuitem, so only set flags when we have an ID match.
 
+        // RESTRICTED MODE: Custom track/via size handler disabled
         if( id == ID_POPUP_PCB_SELECT_CUSTOM_WIDTH )
         {
-            DIALOG_TRACK_VIA_SIZE sizeDlg( frame, bds );
-
-            if( sizeDlg.ShowModal() == wxID_OK )
-            {
-                bds.UseCustomTrackViaSize( true );
-                bds.m_UseConnectedTrackWidth = false;
-            }
+            // Do nothing - custom sizes not allowed
         }
         else if( id >= ID_POPUP_PCB_SELECT_VIASIZE1 && id <= ID_POPUP_PCB_SELECT_VIASIZE16 )
         {
@@ -407,6 +403,10 @@ int DRAWING_TOOL::DrawRectangle( const TOOL_EVENT& aEvent )
     REENTRANCY_GUARD guard( &m_inDrawingTool );
 
     bool                    isTextBox = aEvent.IsAction( &PCB_ACTIONS::drawTextBox );
+
+    // RESTRICTED MODE: TextBox drawing disabled
+    if( isTextBox )
+        return 0;
     PCB_SHAPE*              rect = nullptr;
     BOARD_COMMIT            commit( m_frame );
     BOARD_ITEM*             parent = m_frame->GetModel();
@@ -614,6 +614,9 @@ int DRAWING_TOOL::DrawBezier( const TOOL_EVENT& aEvent )
 
 int DRAWING_TOOL::PlaceReferenceImage( const TOOL_EVENT& aEvent )
 {
+    // RESTRICTED MODE: Reference image placement disabled
+    return 0;
+
     if( m_inDrawingTool )
         return 0;
 
@@ -859,6 +862,9 @@ int DRAWING_TOOL::PlaceReferenceImage( const TOOL_EVENT& aEvent )
 
 int DRAWING_TOOL::PlaceText( const TOOL_EVENT& aEvent )
 {
+    // RESTRICTED MODE: Text placement disabled
+    return 0;
+
     if( m_isFootprintEditor && !m_frame->GetModel() )
         return 0;
 
@@ -1113,6 +1119,9 @@ int DRAWING_TOOL::PlaceText( const TOOL_EVENT& aEvent )
 
 int DRAWING_TOOL::DrawTable( const TOOL_EVENT& aEvent )
 {
+    // RESTRICTED MODE: Table drawing disabled
+    return 0;
+
     if( m_inDrawingTool )
         return 0;
 
@@ -1343,6 +1352,9 @@ void DRAWING_TOOL::constrainDimension( PCB_DIMENSION_BASE* aDim )
 
 int DRAWING_TOOL::DrawDimension( const TOOL_EVENT& aEvent )
 {
+    // RESTRICTED MODE: Dimension drawing disabled
+    return 0;
+
     if( m_isFootprintEditor && !m_frame->GetModel() )
         return 0;
 

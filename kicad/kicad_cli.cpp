@@ -64,14 +64,15 @@
 #include "cli/command_pcb_export_pdf.h"
 #include "cli/command_pcb_export_pos.h"
 #include "cli/command_pcb_export_svg.h"
-#include "cli/command_sch_export_bom.h"
-#include "cli/command_sch_export_pythonbom.h"
-#include "cli/command_sch_export_netlist.h"
-#include "cli/command_sch_export_plot.h"
 #include "cli/command_fp.h"
 #include "cli/command_fp_export.h"
 #include "cli/command_fp_export_svg.h"
 #include "cli/command_fp_upgrade.h"
+#ifndef KICAD_CLI_PCB_ONLY
+#include "cli/command_sch_export_bom.h"
+#include "cli/command_sch_export_pythonbom.h"
+#include "cli/command_sch_export_netlist.h"
+#include "cli/command_sch_export_plot.h"
 #include "cli/command_sch.h"
 #include "cli/command_sch_erc.h"
 #include "cli/command_sch_export.h"
@@ -79,6 +80,7 @@
 #include "cli/command_sym_export.h"
 #include "cli/command_sym_export_svg.h"
 #include "cli/command_sym_upgrade.h"
+#endif
 #include "cli/command_version.h"
 #include "cli/exit_codes.h"
 
@@ -134,6 +136,11 @@ static CLI::PCB_EXPORT_IPC2581_COMMAND   exportPcbIpc2581Cmd{};
 static CLI::PCB_EXPORT_IPCD356_COMMAND   exportPcbIpcD356Cmd{};
 static CLI::PCB_EXPORT_ODB_COMMAND       exportPcbOdbCmd{};
 static CLI::PCB_EXPORT_COMMAND           exportPcbCmd{};
+static CLI::FP_COMMAND                   fpCmd{};
+static CLI::FP_EXPORT_COMMAND            fpExportCmd{};
+static CLI::FP_EXPORT_SVG_COMMAND        fpExportSvgCmd{};
+static CLI::FP_UPGRADE_COMMAND           fpUpgradeCmd{};
+#ifndef KICAD_CLI_PCB_ONLY
 static CLI::SCH_EXPORT_COMMAND           exportSchCmd{};
 static CLI::SCH_COMMAND                  schCmd{};
 static CLI::SCH_ERC_COMMAND              schErcCmd{};
@@ -145,14 +152,11 @@ static CLI::SCH_EXPORT_PLOT_COMMAND      exportSchHpglCmd{ "hpgl", UTF8STDSTR( _
 static CLI::SCH_EXPORT_PLOT_COMMAND      exportSchPdfCmd{ "pdf", UTF8STDSTR( _( "Export PDF" ) ), SCH_PLOT_FORMAT::PDF, false };
 static CLI::SCH_EXPORT_PLOT_COMMAND      exportSchPostscriptCmd{ "ps", UTF8STDSTR( _( "Export PS" ) ), SCH_PLOT_FORMAT::POST };
 static CLI::SCH_EXPORT_PLOT_COMMAND      exportSchSvgCmd{ "svg", UTF8STDSTR( _( "Export SVG" ) ), SCH_PLOT_FORMAT::SVG };
-static CLI::FP_COMMAND                   fpCmd{};
-static CLI::FP_EXPORT_COMMAND            fpExportCmd{};
-static CLI::FP_EXPORT_SVG_COMMAND        fpExportSvgCmd{};
-static CLI::FP_UPGRADE_COMMAND           fpUpgradeCmd{};
 static CLI::SYM_COMMAND                  symCmd{};
 static CLI::SYM_EXPORT_COMMAND           symExportCmd{};
 static CLI::SYM_EXPORT_SVG_COMMAND       symExportSvgCmd{};
 static CLI::SYM_UPGRADE_COMMAND          symUpgradeCmd{};
+#endif
 static CLI::VERSION_COMMAND              versionCmd{};
 
 
@@ -214,6 +218,7 @@ static std::vector<COMMAND_ENTRY> commandStack = {
             }
         }
     },
+#ifndef KICAD_CLI_PCB_ONLY
     {
         &schCmd,
         {
@@ -249,6 +254,7 @@ static std::vector<COMMAND_ENTRY> commandStack = {
             }
         }
     },
+#endif
     {
             &versionCmd,
     }

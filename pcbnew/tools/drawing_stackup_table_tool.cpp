@@ -690,6 +690,9 @@ int DRAWING_TOOL::InteractivePlaceWithPreview( const TOOL_EVENT& aEvent,
 
 int DRAWING_TOOL::PlaceCharacteristics( const TOOL_EVENT& aEvent )
 {
+    // RESTRICTED MODE: Board characteristics placement disabled
+    return 0;
+
     VECTOR2I tableSize;
 
     LSET layerSet = ( layerSet.AllCuMask() | layerSet.AllTechMask() );
@@ -752,6 +755,9 @@ int DRAWING_TOOL::PlaceCharacteristics( const TOOL_EVENT& aEvent )
 
 int DRAWING_TOOL::PlaceStackup( const TOOL_EVENT& aEvent )
 {
+    // RESTRICTED MODE: Stackup table placement disabled
+    return 0;
+
     VECTOR2I tableSize;
 
     LSET layerSet = ( layerSet.AllCuMask() | layerSet.AllTechMask() );

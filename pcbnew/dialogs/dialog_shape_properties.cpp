@@ -988,8 +988,8 @@ DIALOG_SHAPE_PROPERTIES::DIALOG_SHAPE_PROPERTIES( PCB_BASE_EDIT_FRAME* aParent, 
         }
     }
 
-    // Do not allow locking items in the footprint editor
-    m_locked->Show( dynamic_cast<PCB_EDIT_FRAME*>( aParent ) != nullptr );
+    // RESTRICTED MODE: Hide lock checkbox
+    m_locked->Hide();
 
     // Configure the layers list selector
     if( m_parent->GetFrameType() == FRAME_FOOTPRINT_EDITOR )

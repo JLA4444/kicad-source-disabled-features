@@ -2306,8 +2306,9 @@ std::vector<int> FOOTPRINT::ViewGetLayers() const
         break;
     }
 
-    if( IsLocked() )
-        layers.push_back( LAYER_LOCKED_ITEM_SHADOW );
+    // RESTRICTED MODE: Don't show locked item shadow
+    // if( IsLocked() )
+    //     layers.push_back( LAYER_LOCKED_ITEM_SHADOW );
 
     if( IsConflicting() )
         layers.push_back( LAYER_CONFLICTS_SHADOW );

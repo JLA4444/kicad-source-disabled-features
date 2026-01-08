@@ -114,7 +114,8 @@ public:
     VECTOR2I GetPosition() const override             { return m_Start; }
     const VECTOR2I GetFocusPosition() const override  { return ( m_Start + m_End ) / 2; }
 
-    virtual void SetWidth( int aWidth )             { m_width = aWidth; }
+    // RESTRICTED MODE: Round width to nearest 0.1mm (100000 IU)
+    virtual void SetWidth( int aWidth )             { m_width = ((aWidth + 50000) / 100000) * 100000; }
     virtual int GetWidth() const                    { return m_width; }
 
     void SetEnd( const VECTOR2I& aEnd )     { m_End = aEnd; }
@@ -123,14 +124,15 @@ public:
     void SetStart( const VECTOR2I& aStart ) { m_Start = aStart; }
     const VECTOR2I& GetStart() const        { return m_Start; }
 
-    void SetStartX( int aX )                { m_Start.x = aX; }
-    void SetStartY( int aY )                { m_Start.y = aY; }
+    // RESTRICTED MODE: Round coordinates to nearest 0.1mm (100000 IU)
+    void SetStartX( int aX )                { m_Start.x = ((aX + 50000) / 100000) * 100000; }
+    void SetStartY( int aY )                { m_Start.y = ((aY + 50000) / 100000) * 100000; }
 
     int GetStartX() const                   { return m_Start.x; }
     int GetStartY() const                   { return m_Start.y; }
 
-    void SetEndX( int aX )                  { m_End.x = aX; }
-    void SetEndY( int aY )                  { m_End.y = aY; }
+    void SetEndX( int aX )                  { m_End.x = ((aX + 50000) / 100000) * 100000; }
+    void SetEndY( int aY )                  { m_End.y = ((aY + 50000) / 100000) * 100000; }
 
     int GetEndX() const                     { return m_End.x; }
     int GetEndY() const                     { return m_End.y; }
@@ -413,9 +415,10 @@ public:
     bool HasValidLayerPair( int aCopperLayerCount );
 
     VIATYPE GetViaType() const { return m_viaType; }
-    void SetViaType( VIATYPE aViaType ) 
+    void SetViaType( VIATYPE aViaType )
     {
-        m_viaType = aViaType;
+        // RESTRICTED MODE: Only through-hole vias allowed
+        m_viaType = VIATYPE::THROUGH;
         // If someone updates a VIA to TH, we want to kick out any non-outer layers
         SanitizeLayers();
     }
@@ -616,9 +619,11 @@ public:
      *
      * @param aDrill is the new drill diameter
      */
+    // RESTRICTED MODE: Round drill to nearest 0.1mm (100000 IU)
     void SetDrill( int aDrill )
     {
-        m_padStack.Drill().size = { aDrill, aDrill };
+        int rounded = ((aDrill + 50000) / 100000) * 100000;
+        m_padStack.Drill().size = { rounded, rounded };
     }
 
     /**

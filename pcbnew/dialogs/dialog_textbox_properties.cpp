@@ -77,11 +77,8 @@ DIALOG_TEXTBOX_PROPERTIES::DIALOG_TEXTBOX_PROPERTIES( PCB_BASE_EDIT_FRAME* aPare
     m_MultiLineText->SetScrollWidth( 1 );
     m_MultiLineText->SetScrollWidthTracking( true );
 
-    if( m_textBox->GetParentFootprint() )
-    {
-        // Do not allow locking items in the footprint editor
-        m_cbLocked->Show( false );
-    }
+    // RESTRICTED MODE: Hide lock checkbox
+    m_cbLocked->Hide();
 
     SetInitialFocus( m_MultiLineText );
 

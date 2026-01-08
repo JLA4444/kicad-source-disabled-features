@@ -102,11 +102,8 @@ DIALOG_TABLE_PROPERTIES::DIALOG_TABLE_PROPERTIES( PCB_BASE_EDIT_FRAME* aFrame, P
         }
     }
 
-    if( m_table->GetParentFootprint() )
-    {
-        // Do not allow locking items in the footprint editor
-        m_cbLocked->Show( false );
-    }
+    // RESTRICTED MODE: Hide lock checkbox
+    m_cbLocked->Hide();
 
     // Configure the layers list selector.  Note that footprints are built outside the current
     // board and so we may need to show all layers if the text is on an unactivated layer.

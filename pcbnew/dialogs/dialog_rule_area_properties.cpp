@@ -318,6 +318,8 @@ bool DIALOG_RULE_AREA_PROPERTIES::TransferDataToWindow()
 
 
     m_cbLocked->SetValue( m_zonesettings.m_Locked );
+    // RESTRICTED MODE: Hide lock checkbox
+    m_cbLocked->Hide();
     m_tcName->SetValue( m_zonesettings.m_Name );
 
     switch( m_zonesettings.m_ZoneBorderDisplayStyle )

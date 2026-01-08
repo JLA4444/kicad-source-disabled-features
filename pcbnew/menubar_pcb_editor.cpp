@@ -54,37 +54,13 @@ void PCB_EDIT_FRAME::doReCreateMenuBar()
     ACTION_MENU*   fileMenu = new ACTION_MENU( false, selTool );
     static ACTION_MENU* openRecentMenu;
 
-    if( Kiface().IsSingle() )   // not when under a project mgr
-    {
-        FILE_HISTORY& fileHistory = GetFileHistory();
+    // RESTRICTED MODE: File > New, Open, Recent disabled
+    // if( Kiface().IsSingle() )   // not when under a project mgr
+    // {
+    //     ... removed for restricted mode
+    // }
 
-        // Create the menu if it does not exist. Adding a file to/from the history
-        // will automatically refresh the menu.
-        if( !openRecentMenu )
-        {
-            openRecentMenu = new ACTION_MENU( false, selTool );
-            openRecentMenu->SetIcon( BITMAPS::recent );
-
-            fileHistory.UseMenu( openRecentMenu );
-            fileHistory.AddFilesToMenu();
-        }
-
-        // Ensure the title is up to date after changing language
-        openRecentMenu->SetTitle( _( "Open Recent" ) );
-        fileHistory.UpdateClearText( openRecentMenu, _( "Clear Recent Files" ) );
-
-        fileMenu->Add( ACTIONS::doNew );
-        fileMenu->Add( ACTIONS::open );
-
-        wxMenuItem* item = fileMenu->Add( openRecentMenu->Clone() );
-
-        // Add the file menu condition here since it needs the item ID for the submenu
-        ACTION_CONDITIONS cond;
-        cond.Enable( FILE_HISTORY::FileHistoryNotEmpty( fileHistory ) );
-        RegisterUIUpdateHandler( item->GetId(), cond );
-    }
-
-    fileMenu->Add( PCB_ACTIONS::appendBoard );
+    // fileMenu->Add( PCB_ACTIONS::appendBoard );  // RESTRICTED MODE: disabled
     fileMenu->AppendSeparator();
 
     fileMenu->Add( ACTIONS::save );
@@ -100,87 +76,21 @@ void PCB_EDIT_FRAME::doReCreateMenuBar()
 
     fileMenu->Add( ACTIONS::revert );
 
-    fileMenu->AppendSeparator();
-    fileMenu->Add( _( "Resc&ue" ),
-                   _( "Clear board and get last rescue file automatically saved by PCB editor" ),
-                   ID_MENU_RECOVER_BOARD_AUTOSAVE,
-                   BITMAPS::rescue );
+    // RESTRICTED MODE: Rescue, Import, Export, Fabrication Outputs disabled
+    // fileMenu->AppendSeparator();
+    // fileMenu->Add( _( "Resc&ue" ), ... );
+    // fileMenu->Add( submenuImport );
+    // fileMenu->Add( submenuExport );
+    // fileMenu->Add( submenuFabOutputs );
 
-    // Import submenu
-    ACTION_MENU* submenuImport = new ACTION_MENU( false, selTool );
-    submenuImport->SetTitle( _( "Import" ) );
-    submenuImport->SetIcon( BITMAPS::import );
+    // fileMenu->AppendSeparator();
+    // fileMenu->Add( PCB_ACTIONS::boardSetup );  // RESTRICTED MODE: disabled
 
-    submenuImport->Add( PCB_ACTIONS::importNetlist,          ACTION_MENU::NORMAL, _( "Netlist..." ) );
-    submenuImport->Add( PCB_ACTIONS::importSpecctraSession,  ACTION_MENU::NORMAL, _( "Specctra Session..." ) );
-    submenuImport->Add( PCB_ACTIONS::placeImportedGraphics,  ACTION_MENU::NORMAL, _( "Graphics..." ) );
-    submenuImport->Add( _( "Non-KiCad Board File..." ),
-                        _( "Import board file from other applications" ),
-                        ID_IMPORT_NON_KICAD_BOARD, BITMAPS::import_brd_file );
-
-    fileMenu->AppendSeparator();
-    fileMenu->Add( submenuImport );
-
-    // Export submenu
-    ACTION_MENU* submenuExport = new ACTION_MENU( false, selTool );
-    submenuExport->SetTitle( _( "Export" ) );
-    submenuExport->SetIcon( BITMAPS::export_file );
-
-    submenuExport->Add( PCB_ACTIONS::exportSpecctraDSN, ACTION_MENU::NORMAL, _( "Specctra DSN..." ) );
-    submenuExport->Add( _( "GenCAD..." ), _( "Export GenCAD board representation" ),
-                        ID_GEN_EXPORT_FILE_GENCADFORMAT, BITMAPS::post_gencad );
-    submenuExport->Add( _( "VRML..." ), _( "Export VRML 3D board representation" ),
-                        ID_GEN_EXPORT_FILE_VRML, BITMAPS::export3d );
-    submenuExport->Add( _( "IDFv3..." ), _( "Export IDF 3D board representation" ),
-                        ID_GEN_EXPORT_FILE_IDF3, BITMAPS::export_idf );
-    submenuExport->Add( _( "STEP / GLB / BREP / XAO / PLY / STL..." ),
-                        _( "Export STEP / GLB / BREP / XAO / PLY / STL 3D board representation" ),
-                        ID_GEN_EXPORT_FILE_STEP, BITMAPS::export_step );
-    submenuExport->Add( _( "Footprint Association (.cmp) File..." ),
-                        _( "Export footprint association file (*.cmp) for schematic back annotation" ),
-                        ID_PCB_GEN_CMP_FILE, BITMAPS::export_cmp );
-    submenuExport->Add( _( "Hyperlynx..." ), wxEmptyString,
-                        ID_GEN_EXPORT_FILE_HYPERLYNX, BITMAPS::export_step );
-
-    if( ADVANCED_CFG::GetCfg().m_ShowPcbnewExportNetlist && m_exportNetlistAction )
-        submenuExport->Add( *m_exportNetlistAction );
-
-    submenuExport->AppendSeparator();
-    submenuExport->Add( _( "Footprints to Library..." ),
-                        _( "Add footprints used on board to an existing footprint library\n"
-                           "(does not remove other footprints from this library)" ),
-                        ID_MENU_EXPORT_FOOTPRINTS_TO_LIBRARY, BITMAPS::library_archive );
-
-    submenuExport->Add( _( "Footprints to New Library..." ),
-                        _( "Create a new footprint library containing the footprints used on board\n"
-                           "(if the library already exists it will be replaced)" ),
-                        ID_MENU_EXPORT_FOOTPRINTS_TO_NEW_LIBRARY, BITMAPS::library_archive_as );
-
-    fileMenu->Add( submenuExport );
-
-    // Fabrication Outputs submenu
-    ACTION_MENU* submenuFabOutputs = new ACTION_MENU( false, selTool );
-    submenuFabOutputs->SetTitle( _( "Fabrication Outputs" ) );
-    submenuFabOutputs->SetIcon( BITMAPS::fabrication );
-
-    submenuFabOutputs->Add( PCB_ACTIONS::generateGerbers );
-    submenuFabOutputs->Add( PCB_ACTIONS::generateDrillFiles );
-    submenuFabOutputs->Add( PCB_ACTIONS::generateIPC2581File );
-    submenuFabOutputs->Add( PCB_ACTIONS::generateODBPPFile );
-
-    submenuFabOutputs->Add( PCB_ACTIONS::generatePosFile );
-    submenuFabOutputs->Add( PCB_ACTIONS::generateReportFile );
-    submenuFabOutputs->Add( PCB_ACTIONS::generateD356File );
-    submenuFabOutputs->Add( PCB_ACTIONS::generateBOM );
-    fileMenu->Add( submenuFabOutputs );
-
-    fileMenu->AppendSeparator();
-    fileMenu->Add( PCB_ACTIONS::boardSetup );
-
-    fileMenu->AppendSeparator();
-    fileMenu->Add( ACTIONS::pageSettings );
-    fileMenu->Add( ACTIONS::print );
-    fileMenu->Add( ACTIONS::plot );
+    // RESTRICTED MODE: Page Settings, Print, Plot disabled
+    // fileMenu->AppendSeparator();
+    // fileMenu->Add( ACTIONS::pageSettings );
+    // fileMenu->Add( ACTIONS::print );
+    // fileMenu->Add( ACTIONS::plot );
 
     fileMenu->AppendSeparator();
     fileMenu->AddQuitOrClose( &Kiface(), _( "PCB Editor" ) );
@@ -206,22 +116,24 @@ void PCB_EDIT_FRAME::doReCreateMenuBar()
     editMenu->AppendSeparator();
     editMenu->Add( ACTIONS::find );
 
-    editMenu->AppendSeparator();
-    editMenu->Add( PCB_ACTIONS::editTracksAndVias );
-    editMenu->Add( PCB_ACTIONS::editTextAndGraphics );
-    editMenu->Add( PCB_ACTIONS::editTeardrops );
-    editMenu->Add( PCB_ACTIONS::changeFootprints );
-    editMenu->Add( PCB_ACTIONS::swapLayers );
-    editMenu->Add( ACTIONS::gridOrigin );
+    // RESTRICTED MODE: Edit property dialogs disabled
+    // editMenu->AppendSeparator();
+    // editMenu->Add( PCB_ACTIONS::editTracksAndVias );
+    // editMenu->Add( PCB_ACTIONS::editTextAndGraphics );
+    // editMenu->Add( PCB_ACTIONS::editTeardrops );
+    // editMenu->Add( PCB_ACTIONS::changeFootprints );
+    // editMenu->Add( PCB_ACTIONS::swapLayers );
+    // editMenu->Add( ACTIONS::gridOrigin );
 
     editMenu->AppendSeparator();
     editMenu->Add( PCB_ACTIONS::zoneFillAll );
     editMenu->Add( PCB_ACTIONS::zoneUnfillAll );
     editMenu->Add( PCB_ACTIONS::regenerateAllTuning );
 
-    editMenu->AppendSeparator();
-    editMenu->Add( ACTIONS::deleteTool );
-    editMenu->Add( PCB_ACTIONS::globalDeletions );
+    // RESTRICTED MODE: Delete tool and global deletions disabled
+    // editMenu->AppendSeparator();
+    // editMenu->Add( ACTIONS::deleteTool );
+    // editMenu->Add( PCB_ACTIONS::globalDeletions );
 
 
     //----- View menu -----------------------------------------------------------
@@ -236,9 +148,10 @@ void PCB_EDIT_FRAME::doReCreateMenuBar()
     showHidePanels->Add( PCB_ACTIONS::showNetInspector,           ACTION_MENU::CHECK );
     viewMenu->Add( showHidePanels );
 
-    viewMenu->AppendSeparator();
-    viewMenu->Add( ACTIONS::showFootprintBrowser );
-    viewMenu->Add( ACTIONS::show3DViewer );
+    // RESTRICTED MODE: Footprint Browser and 3D Viewer disabled
+    // viewMenu->AppendSeparator();
+    // viewMenu->Add( ACTIONS::showFootprintBrowser );
+    // viewMenu->Add( ACTIONS::show3DViewer );
 
     viewMenu->AppendSeparator();
     viewMenu->Add( ACTIONS::zoomInCenter );
@@ -294,7 +207,8 @@ void PCB_EDIT_FRAME::doReCreateMenuBar()
     //
     ACTION_MENU* placeMenu = new ACTION_MENU( false, selTool );
 
-    placeMenu->Add( PCB_ACTIONS::placeFootprint );
+    // RESTRICTED MODE: Place Footprint disabled
+    // placeMenu->Add( PCB_ACTIONS::placeFootprint );
     placeMenu->Add( PCB_ACTIONS::drawVia );
     placeMenu->Add( PCB_ACTIONS::drawZone );
     placeMenu->Add( PCB_ACTIONS::drawRuleArea );
@@ -316,41 +230,36 @@ void PCB_EDIT_FRAME::doReCreateMenuBar()
     placeMenu->Add( PCB_ACTIONS::drawCircle );
     placeMenu->Add( PCB_ACTIONS::drawPolygon );
     placeMenu->Add( PCB_ACTIONS::drawBezier );
-    placeMenu->Add( PCB_ACTIONS::placeReferenceImage );
-    placeMenu->Add( PCB_ACTIONS::placeText );
-    placeMenu->Add( PCB_ACTIONS::drawTextBox );
-    placeMenu->Add( PCB_ACTIONS::drawTable );
+    // RESTRICTED MODE: Reference image, text, textbox, table, dimensions, characteristics, stackup removed
+    // placeMenu->Add( PCB_ACTIONS::placeReferenceImage );
+    // placeMenu->Add( PCB_ACTIONS::placeText );
+    // placeMenu->Add( PCB_ACTIONS::drawTextBox );
+    // placeMenu->Add( PCB_ACTIONS::drawTable );
 
-    placeMenu->AppendSeparator();
-    ACTION_MENU* dimensionSubmenu = new ACTION_MENU( false, selTool );
-    dimensionSubmenu->SetTitle( _( "Draw Dimensions" ) );
-    dimensionSubmenu->SetIcon( BITMAPS::add_aligned_dimension );
-    dimensionSubmenu->Add( PCB_ACTIONS::drawOrthogonalDimension );
-    dimensionSubmenu->Add( PCB_ACTIONS::drawAlignedDimension );
-    dimensionSubmenu->Add( PCB_ACTIONS::drawCenterDimension );
-    dimensionSubmenu->Add( PCB_ACTIONS::drawRadialDimension );
-    dimensionSubmenu->Add( PCB_ACTIONS::drawLeader );
-    placeMenu->Add( dimensionSubmenu );
+    // RESTRICTED MODE: Dimensions submenu removed
+    // placeMenu->AppendSeparator();
+    // ACTION_MENU* dimensionSubmenu = new ACTION_MENU( false, selTool );
+    // dimensionSubmenu->SetTitle( _( "Draw Dimensions" ) );
+    // dimensionSubmenu->SetIcon( BITMAPS::add_aligned_dimension );
+    // dimensionSubmenu->Add( PCB_ACTIONS::drawOrthogonalDimension );
+    // dimensionSubmenu->Add( PCB_ACTIONS::drawAlignedDimension );
+    // dimensionSubmenu->Add( PCB_ACTIONS::drawCenterDimension );
+    // dimensionSubmenu->Add( PCB_ACTIONS::drawRadialDimension );
+    // dimensionSubmenu->Add( PCB_ACTIONS::drawLeader );
+    // placeMenu->Add( dimensionSubmenu );
 
-    placeMenu->AppendSeparator();
-    placeMenu->Add( PCB_ACTIONS::placeCharacteristics );
-    placeMenu->Add( PCB_ACTIONS::placeStackup );
+    // RESTRICTED MODE: Board characteristics and stackup removed
+    // placeMenu->AppendSeparator();
+    // placeMenu->Add( PCB_ACTIONS::placeCharacteristics );
+    // placeMenu->Add( PCB_ACTIONS::placeStackup );
 
-    placeMenu->AppendSeparator();
-    placeMenu->Add( PCB_ACTIONS::drillOrigin );
-    placeMenu->Add( PCB_ACTIONS::drillResetOrigin );
-    placeMenu->Add( ACTIONS::gridSetOrigin );
-    placeMenu->Add( ACTIONS::gridResetOrigin );
-
-    placeMenu->AppendSeparator();
-    ACTION_MENU* autoplaceSubmenu = new ACTION_MENU( false, selTool );
-    autoplaceSubmenu->SetTitle( _( "Auto-Place Footprints" ) );
-    autoplaceSubmenu->SetIcon( BITMAPS::mode_module );
-
-    autoplaceSubmenu->Add( PCB_ACTIONS::autoplaceOffboardComponents );
-    autoplaceSubmenu->Add( PCB_ACTIONS::autoplaceSelectedComponents );
-
-    placeMenu->Add( autoplaceSubmenu );
+    // RESTRICTED MODE: Grid/Drill origin and Auto-Place disabled
+    // placeMenu->AppendSeparator();
+    // placeMenu->Add( PCB_ACTIONS::drillOrigin );
+    // placeMenu->Add( PCB_ACTIONS::drillResetOrigin );
+    // placeMenu->Add( ACTIONS::gridSetOrigin );
+    // placeMenu->Add( ACTIONS::gridResetOrigin );
+    // placeMenu->Add( autoplaceSubmenu );
 
     //-- Route Menu ----------------------------------------------------------
     //
@@ -367,8 +276,9 @@ void PCB_EDIT_FRAME::doReCreateMenuBar()
     routeMenu->Add( PCB_ACTIONS::tuneDiffPair );
     routeMenu->Add( PCB_ACTIONS::tuneSkew );
 
-    routeMenu->AppendSeparator();
-    routeMenu->Add( PCB_ACTIONS::routerSettingsDialog );
+    // RESTRICTED MODE: Router Settings disabled
+    // routeMenu->AppendSeparator();
+    // routeMenu->Add( PCB_ACTIONS::routerSettingsDialog );
 
 
     //-- Inspect Menu --------------------------------------------------------
@@ -387,88 +297,22 @@ void PCB_EDIT_FRAME::doReCreateMenuBar()
     inspectMenu->AppendSeparator();
     inspectMenu->Add( PCB_ACTIONS::inspectClearance );
     inspectMenu->Add( PCB_ACTIONS::inspectConstraints );
-    inspectMenu->Add( PCB_ACTIONS::showFootprintAssociations );
-    inspectMenu->Add( PCB_ACTIONS::diffFootprint );
+    // RESTRICTED MODE: Footprint associations and compare removed
+    // inspectMenu->Add( PCB_ACTIONS::showFootprintAssociations );
+    // inspectMenu->Add( PCB_ACTIONS::diffFootprint );
 
 
     //-- Tools menu ----------------------------------------------------------
     //
     ACTION_MENU* toolsMenu = new ACTION_MENU( false, selTool );
 
-    wxMenuItem* update = toolsMenu->Add( ACTIONS::updatePcbFromSchematic );
-    update->Enable( !Kiface().IsSingle() );
-
-    toolsMenu->Add( PCB_ACTIONS::showEeschema );
-
-    if( !Kiface().IsSingle() )
-        toolsMenu->Add( ACTIONS::showProjectManager );
-
-    toolsMenu->AppendSeparator();
-    toolsMenu->Add( ACTIONS::showFootprintEditor );
-    toolsMenu->Add( PCB_ACTIONS::updateFootprints );
-
+    // RESTRICTED MODE: Most Tools menu items disabled - only keeping Zones Manager
     //Zones management
-    toolsMenu->AppendSeparator();
     toolsMenu->Add( PCB_ACTIONS::zonesManager );
 
-    if( ADVANCED_CFG::GetCfg().m_EnableGenerators )
-    {
-        toolsMenu->AppendSeparator();
-        toolsMenu->Add( PCB_ACTIONS::generatorsShowManager );
-        toolsMenu->Add( PCB_ACTIONS::regenerateAll );
-        toolsMenu->Add( PCB_ACTIONS::regenerateSelected );
-    }
-
-    toolsMenu->AppendSeparator();
-    toolsMenu->Add( PCB_ACTIONS::cleanupTracksAndVias );
-    toolsMenu->Add( PCB_ACTIONS::removeUnusedPads );
-    toolsMenu->Add( PCB_ACTIONS::cleanupGraphics );
-    toolsMenu->Add( PCB_ACTIONS::repairBoard );
-
-    toolsMenu->AppendSeparator();
-    toolsMenu->Add( PCB_ACTIONS::boardReannotate );
-    update = toolsMenu->Add( ACTIONS::updateSchematicFromPcb );
-    update->Enable( !Kiface().IsSingle() );
-
-    if( SCRIPTING::IsWxAvailable() )
-    {
-        toolsMenu->AppendSeparator();
-        toolsMenu->Add( PCB_ACTIONS::showPythonConsole );
-    }
-
-    ACTION_MENU* multichannelSubmenu = new ACTION_MENU( false, selTool );
-    multichannelSubmenu->SetTitle( _( "Multi-Channel" ) );
-    multichannelSubmenu->SetIcon( BITMAPS::mode_module );
-    multichannelSubmenu->Add( PCB_ACTIONS::generatePlacementRuleAreas );
-    multichannelSubmenu->Add( PCB_ACTIONS::repeatLayout );
-
-    toolsMenu->Add( multichannelSubmenu );
-
-    ACTION_MENU* submenuActionPlugins = new ACTION_MENU( false, selTool );
-    submenuActionPlugins->SetTitle( _( "External Plugins" ) );
-    submenuActionPlugins->SetIcon( BITMAPS::puzzle_piece );
-
-    submenuActionPlugins->Add( ACTIONS::pluginsReload );
-    submenuActionPlugins->Add( PCB_ACTIONS::pluginsShowFolder );
-
-    // Populate the Action Plugin sub-menu: Must be done before Add
-    // Since the object is cloned by Add
-    submenuActionPlugins->AppendSeparator();
-    buildActionPluginMenus( submenuActionPlugins );
-
-    toolsMenu->AppendSeparator();
-    toolsMenu->Add( submenuActionPlugins );
-
-    //-- Preferences menu ----------------------------------------------------
-    //
-    ACTION_MENU* prefsMenu = new ACTION_MENU( false, selTool );
-
-    prefsMenu->Add( ACTIONS::configurePaths );
-    prefsMenu->Add( ACTIONS::showFootprintLibTable );
-    prefsMenu->Add( ACTIONS::openPreferences );
-
-    prefsMenu->AppendSeparator();
-    AddMenuLanguageList( prefsMenu, selTool );
+    // RESTRICTED MODE: Preferences menu removed entirely
+    // ACTION_MENU* prefsMenu = new ACTION_MENU( false, selTool );
+    // AddMenuLanguageList( prefsMenu, selTool );
 
 
     //--MenuBar -----------------------------------------------------------
@@ -480,8 +324,9 @@ void PCB_EDIT_FRAME::doReCreateMenuBar()
     menuBar->Append( routeMenu,   _( "Ro&ute" ) );
     menuBar->Append( inspectMenu, _( "&Inspect" ) );
     menuBar->Append( toolsMenu,   _( "&Tools" ) );
-    menuBar->Append( prefsMenu,   _( "P&references" ) );
-    AddStandardHelpMenu( menuBar );
+    // RESTRICTED MODE: Preferences and Help menus removed
+    // menuBar->Append( prefsMenu,   _( "P&references" ) );
+    // AddStandardHelpMenu( menuBar );
 
     SetMenuBar( menuBar );
     delete oldMenuBar;

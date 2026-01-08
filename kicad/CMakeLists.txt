@@ -5,16 +5,23 @@ if( COMPILER_SUPPORTS_WARNINGS )
 endif()
 
 add_compile_definitions( KICAD )
+if( KICAD_BUILD_PCBNEW_ONLY )
+    add_compile_definitions( KICAD_CLI_PCB_ONLY )
+endif()
 add_subdirectory( pcm )
 
 include_directories( BEFORE ${INC_BEFORE} )
 include_directories(
     ${CMAKE_SOURCE_DIR}/common/dialogs
     ${CMAKE_SOURCE_DIR}/pcbnew
-    ${CMAKE_SOURCE_DIR}/eeschema
     ${CMAKE_SOURCE_DIR}/kicad/pcm
     ${INC_AFTER}
     )
+
+# Only include eeschema when building full kicad (not PCBNEW_ONLY mode)
+if( NOT KICAD_BUILD_PCBNEW_ONLY )
+    include_directories( ${CMAKE_SOURCE_DIR}/eeschema )
+endif()
 
 set( KICAD_SRCS
     dialogs/dialog_destination.cpp
@@ -48,7 +55,8 @@ set( KICAD_SRCS
     tools/kicad_manager_control.cpp
     )
 
-set( KICAD_CLI_SRCS
+# PCB-only CLI sources (always included)
+set( KICAD_CLI_PCB_SRCS
     cli/command.cpp
     cli/command_jobset_run.cpp
     cli/command_pcb_export_base.cpp
@@ -68,6 +76,12 @@ set( KICAD_CLI_SRCS
     cli/command_pcb_export_svg.cpp
     cli/command_fp_export_svg.cpp
     cli/command_fp_upgrade.cpp
+    cli/command_version.cpp
+    jobs_runner.cpp
+    )
+
+# Eeschema CLI sources (only when not in PCBNEW_ONLY mode)
+set( KICAD_CLI_SCH_SRCS
     cli/command_sch_export_bom.cpp
     cli/command_sch_export_pythonbom.cpp
     cli/command_sch_export_netlist.cpp
@@ -75,10 +89,14 @@ set( KICAD_CLI_SRCS
     cli/command_sch_erc.cpp
     cli/command_sym_export_svg.cpp
     cli/command_sym_upgrade.cpp
-    cli/command_version.cpp
-
-    jobs_runner.cpp
     )
+
+# Combine CLI sources based on build mode
+if( KICAD_BUILD_PCBNEW_ONLY )
+    set( KICAD_CLI_SRCS ${KICAD_CLI_PCB_SRCS} )
+else()
+    set( KICAD_CLI_SRCS ${KICAD_CLI_PCB_SRCS} ${KICAD_CLI_SCH_SRCS} )
+endif()
 
 if( WIN32 )
     if( MINGW )
@@ -102,12 +120,15 @@ if( APPLE )
     set( MACOSX_BUNDLE_NAME kicad )
 endif()
 
-add_executable( kicad WIN32 MACOSX_BUNDLE
-    kicad.cpp
-    ${KICAD_SRCS}
-    ${KICAD_EXTRA_SRCS}
-    ${KICAD_RESOURCES}
-    )
+# Only build kicad manager app when not in PCBNEW_ONLY mode
+if( NOT KICAD_BUILD_PCBNEW_ONLY )
+    add_executable( kicad WIN32 MACOSX_BUNDLE
+        kicad.cpp
+        ${KICAD_SRCS}
+        ${KICAD_EXTRA_SRCS}
+        ${KICAD_RESOURCES}
+        )
+endif()
 
 add_executable( kicad-cli WIN32
     kicad_cli.cpp
@@ -125,13 +146,15 @@ if( MSVC )
    set_target_properties(kicad-cli PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:CONSOLE")
    set_target_properties(kicad-cli PROPERTIES LINK_FLAGS_MINSIZEREL "/SUBSYSTEM:CONSOLE")
 
-   # Allow running from build dir
-   add_custom_command( TARGET kicad POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:kiapi>" "$<TARGET_FILE_DIR:kicad>"
-        )
+   # Allow running from build dir (only when kicad target exists)
+   if( NOT KICAD_BUILD_PCBNEW_ONLY )
+       add_custom_command( TARGET kicad POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:kiapi>" "$<TARGET_FILE_DIR:kicad>"
+            )
+   endif()
 endif()
 
-if( UNIX )
+if( UNIX AND NOT KICAD_BUILD_PCBNEW_ONLY )
     # for build directory: create kiface symlinks so kicad (exe) can be run in-situ
     add_custom_target( kiface_sym_links
         COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_BINARY_DIR}/eeschema/_eeschema.kiface" "${CMAKE_BINARY_DIR}/kicad/_eeschema.kiface"
@@ -142,16 +165,18 @@ if( UNIX )
 endif()
 
 if( APPLE )
-    set_target_properties( kicad PROPERTIES
-        MACOSX_BUNDLE_INFO_PLIST ${PROJECT_BINARY_DIR}/kicad/Info.plist
-        )
-    target_link_libraries( kicad
-        nlohmann_json
-        common
-        kicommon
-        core
-        ${wxWidgets_LIBRARIES}
-        )
+    if( NOT KICAD_BUILD_PCBNEW_ONLY )
+        set_target_properties( kicad PROPERTIES
+            MACOSX_BUNDLE_INFO_PLIST ${PROJECT_BINARY_DIR}/kicad/Info.plist
+            )
+        target_link_libraries( kicad
+            nlohmann_json
+            common
+            kicommon
+            core
+            ${wxWidgets_LIBRARIES}
+            )
+    endif()
 
     set_target_properties( kicad-cli PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${OSX_BUNDLE_BUILD_BIN_DIR}
@@ -164,15 +189,17 @@ if( APPLE )
         core
         )
 else()
-    target_link_libraries( kicad
-        nlohmann_json
-        common
-        gal
-        common      #repeated due to a circular dependency between gal and common
-        kicommon
-        core
-        ${wxWidgets_LIBRARIES}
-        )
+    if( NOT KICAD_BUILD_PCBNEW_ONLY )
+        target_link_libraries( kicad
+            nlohmann_json
+            common
+            gal
+            common      #repeated due to a circular dependency between gal and common
+            kicommon
+            core
+            ${wxWidgets_LIBRARIES}
+            )
+    endif()
 
     target_link_libraries( kicad-cli
         nlohmann_json
@@ -185,13 +212,17 @@ else()
         )
 endif()
 
-target_link_libraries( kicad pcm )
+if( NOT KICAD_BUILD_PCBNEW_ONLY )
+    target_link_libraries( kicad pcm )
+endif()
 target_link_libraries( kicad-cli pcm )
 
-install( TARGETS kicad
-    DESTINATION ${KICAD_BIN}
-    COMPONENT binary
-    )
+if( NOT KICAD_BUILD_PCBNEW_ONLY )
+    install( TARGETS kicad
+        DESTINATION ${KICAD_BIN}
+        COMPONENT binary
+        )
+endif()
 
 if( NOT APPLE )
     install( TARGETS kicad-cli
@@ -200,7 +231,7 @@ if( NOT APPLE )
         )
 endif()
 
-if( KICAD_WIN32_INSTALL_PDBS )
+if( KICAD_WIN32_INSTALL_PDBS AND NOT KICAD_BUILD_PCBNEW_ONLY )
     # Get the PDBs to copy over for MSVC
     install(FILES $<TARGET_PDB_FILE:kicad> DESTINATION ${KICAD_BIN})
 endif()
@@ -218,9 +249,11 @@ if( APPLE )
         set( PYTHON_FRAMEWORK_HELPER "0" )
     endif()
 
-    set_target_properties( kicad PROPERTIES BUILD_RPATH ${PYTHON_FRAMEWORK} )
-    set_target_properties( kicad PROPERTIES INSTALL_RPATH
-            "@executable_path/../Frameworks;@executable_path/../Frameworks/Python.framework" )
+    if( NOT KICAD_BUILD_PCBNEW_ONLY )
+        set_target_properties( kicad PROPERTIES BUILD_RPATH ${PYTHON_FRAMEWORK} )
+        set_target_properties( kicad PROPERTIES INSTALL_RPATH
+                "@executable_path/../Frameworks;@executable_path/../Frameworks/Python.framework" )
+    endif()
     set_target_properties( kicad-cli PROPERTIES INSTALL_RPATH
             "@executable_path/../Frameworks;@executable_path/../Frameworks/Python.framework" )
     set_target_properties( kicad-cli PROPERTIES BUILD_WITH_INSTALL_RPATH 1 )

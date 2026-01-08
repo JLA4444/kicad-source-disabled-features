@@ -424,6 +424,10 @@ DIALOG_TRACK_VIA_PROPERTIES::DIALOG_TRACK_VIA_PROPERTIES( PCB_BASE_EDIT_FRAME* a
         case VIATYPE::NOT_DEFINED:  m_ViaTypeChoice->SetSelection( wxNOT_FOUND ); break;
         }
 
+        // RESTRICTED MODE: Hide via type dropdown (only through-hole vias allowed)
+        m_ViaTypeLabel->Hide();
+        m_ViaTypeChoice->Hide();
+
         m_ViaStartLayer->Enable( viaType != VIATYPE::THROUGH );
         m_ViaEndLayer->Enable( viaType != VIATYPE::THROUGH );
 
@@ -470,6 +474,9 @@ DIALOG_TRACK_VIA_PROPERTIES::DIALOG_TRACK_VIA_PROPERTIES( PCB_BASE_EDIT_FRAME* a
         m_lockedCbox->Set3StateValue( wxCHK_CHECKED );
     else
         m_lockedCbox->Set3StateValue( wxCHK_UNCHECKED );
+
+    // RESTRICTED MODE: Hide lock checkbox
+    m_lockedCbox->Hide();
 
     if( m_tracks )
         SetInitialFocus( m_TrackWidthCtrl );

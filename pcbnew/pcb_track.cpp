@@ -369,9 +369,11 @@ double PCB_VIA::Similarity( const BOARD_ITEM& aOther ) const
 }
 
 
+// RESTRICTED MODE: Round via width to nearest 0.1mm (100000 IU)
 void PCB_VIA::SetWidth( int aWidth )
 {
-    m_padStack.SetSize( { aWidth, aWidth }, PADSTACK::ALL_LAYERS );
+    int rounded = ((aWidth + 50000) / 100000) * 100000;
+    m_padStack.SetSize( { rounded, rounded }, PADSTACK::ALL_LAYERS );
 }
 
 
@@ -383,9 +385,11 @@ int PCB_VIA::GetWidth() const
 }
 
 
+// RESTRICTED MODE: Round via width to nearest 0.1mm (100000 IU)
 void PCB_VIA::SetWidth( PCB_LAYER_ID aLayer, int aWidth )
 {
-    m_padStack.SetSize( { aWidth, aWidth }, aLayer );
+    int rounded = ((aWidth + 50000) / 100000) * 100000;
+    m_padStack.SetSize( { rounded, rounded }, aLayer );
 }
 
 
@@ -1372,8 +1376,9 @@ std::vector<int> PCB_TRACK::ViewGetLayers() const
             layers.push_back( B_Mask );
     }
 
-    if( IsLocked() )
-        layers.push_back( LAYER_LOCKED_ITEM_SHADOW );
+    // RESTRICTED MODE: Don't show locked item shadow
+    // if( IsLocked() )
+    //     layers.push_back( LAYER_LOCKED_ITEM_SHADOW );
 
     return layers;
 }
@@ -1481,8 +1486,9 @@ std::vector<int> PCB_VIA::ViewGetLayers() const
         ret_layers.push_back( LAYER_CLEARANCE_START + layer );
     }
 
-    if( IsLocked() )
-        ret_layers.push_back( LAYER_LOCKED_ITEM_SHADOW );
+    // RESTRICTED MODE: Don't show locked item shadow
+    // if( IsLocked() )
+    //     ret_layers.push_back( LAYER_LOCKED_ITEM_SHADOW );
 
     // Vias can also be on a solder mask layer. They are on these layers or not,
     // depending on the plot and solder mask options
